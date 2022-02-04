@@ -1,6 +1,6 @@
-name: 'Terraform'
+name: 'Terraform flow'
 
-description: 'Perform terraform plan and apply in given directory'
+description: 'Perform terraform flow in given directory'
 
 inputs:
   directory:
