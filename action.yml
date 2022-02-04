@@ -1,0 +1,67 @@
+name: 'Terraform'
+
+description: 'Perform terraform plan and apply in given directory'
+
+inputs:
+  directory:
+    description: 'the directory where terraform should run'
+    required: true
+  var-file:
+    description: 'the terraform variables that should be used'
+    required: false
+    default: "../environment/variables.tfvars"
+  backend-config:
+    description: 'the backend configuration that should be usesd'
+    required: true
+    default: ""
+  
+
+runs:
+  using: "composite"
+  steps:    
+    - name: Terraform Init
+      id: init
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.backend-config }}" ]; then
+          terraform init -var-file "${{ inputs.var-file }}" -reconfigure -backend-config ${{ inputs.backend-config }} -upgrade
+        else
+          terraform init -var-file "${{ inputs.var-file }}" -upgrade
+        fi
+      working-directory: "${{ inputs.directory }}"
+
+    - name: Terraform Validate
+      id: validate
+      shell: bash
+      run: terraform validate -no-color
+      working-directory: "${{ inputs.directory }}"
+
+    - name: Terraform Plan
+      id: plan
+      shell: bash    
+      run: terraform plan -no-color -var-file "${{ inputs.var-file }}"
+      working-directory: "${{ inputs.directory }}"
+  
+    - name: Failed plan
+      if: ${{ failure() }}
+      env:
+        PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+      id: failed-plan
+      shell: bash
+      run: |
+        # const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+        const output = `#### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+        #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+        #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+        <details><summary>Show Plan</summary>
+        \`\`\`\
+        ${process.env.PLAN}
+        \`\`\`
+        </details>        
+
+    - name: Terraform Apply
+      id: apply
+      shell: bash    
+      run: terraform apply -auto-approve  -var-file "${{ inputs.var-file }}"
+      working-directory: "${{ inputs.directory }}"
+
