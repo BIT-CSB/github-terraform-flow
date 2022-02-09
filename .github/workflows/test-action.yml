@@ -11,7 +11,7 @@ on:
 
 jobs:
   test:
-    name: "Perform invites"
+    name: "Test "
     runs-on: ubuntu-latest
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
@@ -23,18 +23,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Copy action.yml
+        run: |
+          mkdir -p .github/actions
+          cp action.yml .github/actions/
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
 
-      - name: Terraform 
-        uses: ./action.yml
+      - name: Terraform - Test 1
+        uses: ./.github/actions/action.yml
         with:
           directory: "./test-1"
           var-file: ""
           backend-config: ""
 
-      - name: Terraform 
-        uses: ./action.yml
+      - name: Terraform - Test 2
+        uses: ./.github/actions/action.yml
         with:
           directory: "./test-2"
           var-file: "../environment/variables.tfvars"
