@@ -54,7 +54,7 @@ jobs:
 
       - name: Verify backend-config
         run: |
-          typeset -i count=$(ls -1 terraform.tfstate2 | wc -l)
+          typeset -i count=$(ls -1 terraform.tfstate | wc -l)
           if [ "$count" -ne "1" ]; then
             exit 1
           fi
