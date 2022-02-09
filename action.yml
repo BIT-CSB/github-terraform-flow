@@ -18,7 +18,17 @@ inputs:
 
 runs:
   using: "composite"
-  steps:    
+  steps: 
+    - name: Terraform Init
+      id: varFile
+      shell: bash
+      run: |
+        USE_VAR_FILE=""
+        if [ -n "${{ inputs.var-file }}" ]; then
+          USE_VAR_FILE="-var-file "${{ inputs.var-file }}""
+        fi
+        echo "::set-output name=USE_VAR_FILE::$USE_VAR_FILE"
+
     - name: Terraform Init
       id: init
       shell: bash
@@ -27,15 +37,10 @@ runs:
         if [ -n "${{ inputs.backend-config }}" ]; then
           USE_BACKEND_CONFIG="-reconfigure -backend-config ${{ inputs.backend-config }}"
         fi
-        # echo "::set-env name=USE_BACKEND_CONFIG::$USE_BACKEND_CONFIG"
+        # echo "::set-output name=USE_BACKEND_CONFIG::$USE_BACKEND_CONFIG"
 
-        USE_VAR_FILE=""
-        if [ -n "${{ inputs.var-file }}" ]; then
-          USE_VAR_FILE="-var-file "${{ inputs.var-file }}""
-        fi
-        echo "::set-env name=USE_VAR_FILE::$USE_VAR_FILE"
 
-        terraform init $USE_VAR_FILE $USE_BACKEND_CONFIG $upgrade
+        terraform init ${{ steps.varFile.outputs-USE_VAR_FILE }} $USE_BACKEND_CONFIG $upgrade
       working-directory: "${{ inputs.directory }}"
 
     - name: Terraform Validate
@@ -47,7 +52,7 @@ runs:
     - name: Terraform Plan
       id: plan
       shell: bash    
-      run: terraform plan -no-color $USE_VAR_FILE
+      run: terraform plan -no-color ${{ steps.varFile.outputs-USE_VAR_FILE }}
       working-directory: "${{ inputs.directory }}"
   
     - name: Failed plan
