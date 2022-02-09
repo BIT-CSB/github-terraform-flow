@@ -27,21 +27,31 @@ jobs:
         run: |
           mkdir -p .github/actions/terraform-flow
           cp action.yml .github/actions/terraform-flow/
-          ls -al .github/actions/
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
 
-      - name: Terraform - Test 1
+      - name: Test - empty var-file and empty backend-config
         uses: ./.github/actions/terraform-flow
         with:
           directory: "./test-1"
           var-file: ""
           backend-config: ""
 
-      - name: Terraform - Test 2
+      - name: Test - var-file and empty backend-config
         uses: ./.github/actions/terraform-flow
         with:
           directory: "./test-2"
           var-file: "../environment/variables.tfvars"
           backend-config: ""
+
+      - name: Test - empty var-file and  backend-config
+        uses: ./.github/actions/terraform-flow
+        with:
+          directory: "./test-3"
+          var-file: ""
+          backend-config: "../environment/backend.tf"
+
+      - name: Copy action.yml
+        run: |
+          ls -1
