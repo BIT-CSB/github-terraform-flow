@@ -52,6 +52,9 @@ jobs:
           var-file: ""
           backend-config: "../environment/backend.tf"
 
-      - name: Copy action.yml
+      - name: Verify backend-config
         run: |
-          ls -1
+          typeset -i count=$(ls -1 terraform.tfstate2 | wc -l)
+          if [ "$count" -ne "1" ]; then
+            exit 1
+          fi
