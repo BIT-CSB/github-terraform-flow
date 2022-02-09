@@ -1,0 +1,41 @@
+name: "Azure Subscription Flow"
+
+env:
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+concurrency: azure_subscription_flow
+
+on:
+  push:
+
+jobs:
+  test:
+    name: "Perform invites"
+    runs-on: ubuntu-latest
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform 
+        uses: ./action.yml
+        with:
+          directory: "./test-1"
+          var-file: ""
+          backend-config: ""
+
+      - name: Terraform 
+        uses: ./action.yml
+        with:
+          directory: "./test-2"
+          var-file: "../environment/variables.tfvars"
+          backend-config: ""

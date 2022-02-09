@@ -23,11 +23,19 @@ runs:
       id: init
       shell: bash
       run: |
+        USE_BACKEND_CONFIG=""
         if [ -n "${{ inputs.backend-config }}" ]; then
-          terraform init -var-file "${{ inputs.var-file }}" -reconfigure -backend-config ${{ inputs.backend-config }} -upgrade
-        else
-          terraform init -var-file "${{ inputs.var-file }}" -upgrade
+          USE_BACKEND_CONFIG="-reconfigure -backend-config ${{ inputs.backend-config }}"
         fi
+        # echo "::set-env name=USE_BACKEND_CONFIG::$USE_BACKEND_CONFIG"
+
+        USE_VAR_FILE=""
+        if [ -n "${{ inputs.var-file }}" ]; then
+          USE_VAR_FILE="-var-file "${{ inputs.var-file }}""
+        fi
+        echo "::set-env name=USE_VAR_FILE::$USE_VAR_FILE"
+
+        terraform init $USE_VAR_FILE $USE_BACKEND_CONFIG $upgrade
       working-directory: "${{ inputs.directory }}"
 
     - name: Terraform Validate
@@ -39,7 +47,7 @@ runs:
     - name: Terraform Plan
       id: plan
       shell: bash    
-      run: terraform plan -no-color -var-file "${{ inputs.var-file }}"
+      run: terraform plan -no-color $USE_VAR_FILE
       working-directory: "${{ inputs.directory }}"
   
     - name: Failed plan
@@ -62,6 +70,6 @@ runs:
     - name: Terraform Apply
       id: apply
       shell: bash    
-      run: terraform apply -auto-approve  -var-file "${{ inputs.var-file }}"
+      run: terraform apply -auto-approve $USE_VAR_FILE
       working-directory: "${{ inputs.directory }}"
 
