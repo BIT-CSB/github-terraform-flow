@@ -1,4 +1,4 @@
-name: "Azure Subscription Flow"
+name: "Test"
 
 env:
   ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
@@ -11,7 +11,7 @@ on:
 
 jobs:
   test:
-    name: "Test "
+    name: "Test"
     runs-on: ubuntu-latest
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
@@ -27,6 +27,7 @@ jobs:
         run: |
           mkdir -p .github/actions
           cp action.yml .github/actions/
+          ls -al .github/actions/
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
