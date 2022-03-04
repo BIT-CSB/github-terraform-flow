@@ -9,7 +9,7 @@ inputs:
   var-file:
     description: 'the terraform variables that should be used'
     required: false
-    default: "../environment/variables.tfvars"
+    default: ""
   backend-config:
     description: 'the backend configuration that should be usesd'
     required: true
