@@ -7,11 +7,11 @@ inputs:
     description: 'the directory where terraform should run'
     required: true
   var-file:
-    description: 'the terraform variables that should be used'
+    description: 'the terraform variables that should be used. Relativ to the specified directory.'
     required: false
     default: ""
   backend-config:
-    description: 'the backend configuration that should be usesd'
+    description: 'the backend configuration that should be usesd. Relativ to the specified directory.'
     required: true
     default: ""
   
